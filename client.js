@@ -19,10 +19,9 @@ const WebSocket = require('ws');
 // 替換為伺服器的IP地址
 const serverIP = getLocalIPAddress();
 const ws = new WebSocket(`ws://${serverIP}:8080`);
-
 ws.on('open', function open() {
   console.log('Connected to server');
-  ws.send('Hello Server!');
+  ws.send('Hello Server! This is a client.');
 });
 
 ws.on('message', function incoming(data) {

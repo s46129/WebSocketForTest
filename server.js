@@ -1,6 +1,5 @@
-// 引入 WebSocket 和 os 庫
-const WebSocket = require('ws');
 const os = require('os');
+const WebSocket = require('ws');
 
 // 定義一個函數來獲取本機的 IPv4 地址
 function getLocalIPAddress() {
@@ -26,7 +25,13 @@ wss.on('connection', function connection(ws) {
 
   ws.on('message', function incoming(message) {
     console.log('received: %s', message);
-    ws.send('Hello, you sent -> ' + message);
+
+    // 廣播訊息給所有已連接的客戶端
+    wss.clients.forEach(function each(client) {
+      if (client.readyState === WebSocket.OPEN) {
+        client.send(message);
+      }
+    });
   });
 
   ws.send('Welcome! You are connected to the WebSocket server.');

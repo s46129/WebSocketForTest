@@ -1,3 +1,3 @@
 @echo off
-node TestClient.js
+node server.js
 pause

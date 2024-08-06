@@ -28,8 +28,9 @@ wss.on('connection', function connection(ws) {
 
     // 廣播訊息給所有已連接的客戶端
     wss.clients.forEach(function each(client) {
-      if (client.readyState === WebSocket.OPEN) {
-        client.send(message);
+      if (client !== ws && client.readyState === WebSocket.OPEN) {
+        client.send('client:' + message);
+        console.log('send: %s', message);
       }
     });
   });

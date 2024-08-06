@@ -1,4 +1,5 @@
 const os = require('os');
+const WebSocket = require('ws');
 
 // 定義一個函數來獲取本機的 IPv4 地址
 function getLocalIPAddress() {
@@ -14,14 +15,16 @@ function getLocalIPAddress() {
   return '127.0.0.1'; // 如果沒有找到非內部的 IPv4，返回localhost
 }
 
-const WebSocket = require('ws');
+const clientIP = getLocalIPAddress();
+console.log('Client IP:', clientIP);
 
-// 替換為伺服器的IP地址
-const serverIP = getLocalIPAddress();
+// 伺服器的 IP 地址
+const serverIP = clientIP; // 替換為伺服器的IP地址
 const ws = new WebSocket(`ws://${serverIP}:8080`);
+
 ws.on('open', function open() {
   console.log('Connected to server');
-  ws.send('Hello Server! This is a client.');
+  ws.send(`Hello Server! This is a client from ${clientIP}`);
 });
 
 ws.on('message', function incoming(data) {

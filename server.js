@@ -18,24 +18,30 @@ function getLocalIPAddress() {
 const serverIP = getLocalIPAddress();
 
 // 創建 WebSocket 伺服器，綁定到自動獲取的 IP 和端口上
-const wss = new WebSocket.Server({ host: serverIP, port: 8080 });
+const wss = new WebSocket.Server({host: serverIP, port: 8080});
 
 wss.on('connection', function connection(ws) {
-  console.log('A new client connected');
-
-  ws.on('message', function incoming(message) {
-    console.log('received: %s', message);
-
-    // 廣播訊息給所有已連接的客戶端
+    console.log('A new client connected');
     wss.clients.forEach(function each(client) {
-      if (client !== ws && client.readyState === WebSocket.OPEN) {
-        client.send('client:' + message);
-        console.log('send: %s', message);
-      }
+        if (client.readyState === WebSocket.OPEN) {
+            if (client === ws)
+                client.send('Connect To Server Successfully');
+            else if (client !== ws)
+                client.send('OnNewPlayerJoin');
+        }
     });
-  });
 
-  ws.send('Welcome! You are connected to the WebSocket server.4');
+    ws.on('message', function incoming(message) {
+        console.log('received: %s', message);
+
+        // 廣播訊息給所有已連接的客戶端
+        wss.clients.forEach(function each(client) {
+            if (client.readyState === WebSocket.OPEN) {
+                client.send('' + message);
+                console.log('send: %s', message);
+            }
+        });
+    });
 });
 
 console.log(`WebSocket server is running on ws://${serverIP}:8080`);

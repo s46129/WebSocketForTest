@@ -12,24 +12,23 @@ function getLocalIPAddress() {
     //     }
     //   }
     // }
-    return '127.0.0.1'; // 如果沒有找到非內部的 IPv4，返回localhost
+    return '192.168.1.123'; // 如果沒有找到非內部的 IPv4，返回localhost
 }
 
 const serverIP = getLocalIPAddress();
 
 // 創建 WebSocket 伺服器，綁定到自動獲取的 IP 和端口上
-const wss = new WebSocket.Server({ host: serverIP, port: 8080 });
+const wss = new WebSocket.Server({host: serverIP, port: 8080});
 
 wss.on('connection', function connection(ws) {
     console.log('A new client connected');
     wss.clients.forEach(function each(client) {
         if (client.readyState === WebSocket.OPEN) {
             if (client === ws) {
-                client.send('Connect To Server Successfully');
-                client.send('PlayerCount:'+wss.clients.size);
-
-            } else if (client !== ws)
+                client.send(JSON.stringify({"type": 1, "PlayerCount": wss.clients.size-1}));
+            } else {
                 client.send('OnNewPlayerJoin');
+            }
         }
     });
 
